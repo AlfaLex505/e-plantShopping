@@ -8,56 +8,54 @@ const CartItem = ({ onContinueShopping }) => {
   const dispatch = useDispatch();
 
   // Calculate total amount for all products in the cart
-  const calculateTotalAmount = (cart) => {
+  const calculateTotalAmount = () => {
     let total = 0;
-    cart.forEach(item => {
-      const quantity = item.quantity;
-      const costNumber = parseFloat(item.cost.substring(1));
-      total += costNumber * quantity
-    });
-
+    cart.forEach((item) => {
+      let {cost, quantity} = item;
+      total += parseFloat(cost.substring(1)) * quantity;
+    })
     return total;
-
   };
 
   const handleContinueShopping = (e) => {
-    onContinueShopping(e);
+   onContinueShopping(e);
   };
 
   const handleCheckoutShopping = (e) => {
-    alert('Functionality to be added for future reference');
-  };
-
-
+    e.preventDefault();
+    alert('Throw NotImplementedException');
+  }
 
   const handleIncrement = (item) => {
-    dispatch(updateQuantity({ name: item.name, quantity: item.quantity + 1 }));
+    let newVal = item.quantity;
+    newVal = newVal+1;
+    dispatch(updateQuantity({name: item.name, quantity: newVal}));
   };
 
   const handleDecrement = (item) => {
-    if (item.quantity > 1) {
-      dispatch(updateQuantity({ name: item.name, quantity: item.quantity - 1 }));
+    let newVal = item.quantity;
+    newVal = newVal-1;
+    if (newVal < 1) {
+      dispatch(removeItem({name: item.name}));
     } else {
-      dispatch(removeItem(item.name))
+      dispatch(updateQuantity({name: item.name, quantity: newVal}));
     }
-    
   };
 
   const handleRemove = (item) => {
-    dispatch(removeItem(item.name))
+    dispatch(removeItem({name: item.name}));
   };
 
   // Calculate total cost based on quantity for an item
   const calculateTotalCost = (item) => {
-    const unitPrice = parseFloat(item.cost.substring(1));
-    const subtotal = unitPrice * item.quantity;
-    return subtotal;
-
+    const icost = parseFloat(item.cost.substring(1));
+    const total = item.quantity * icost;
+    return total;
   };
 
   return (
     <div className="cart-container">
-      <h2 style={{ color: 'black' }}>Total Cart Amount: ${calculateTotalAmount(cart)}</h2>
+      <h2 style={{ color: 'black' }}>Total Cart Amount: ${calculateTotalAmount()}</h2>
       <div>
         {cart.map(item => (
           <div className="cart-item" key={item.name}>
@@ -80,7 +78,7 @@ const CartItem = ({ onContinueShopping }) => {
       <div className="continue_shopping_btn">
         <button className="get-started-button" onClick={(e) => handleContinueShopping(e)}>Continue Shopping</button>
         <br />
-        <button className="get-started-button1">Checkout</button>
+        <button className="get-started-button1" onClick={(e) => handleCheckoutShopping(e)}>Checkout</button>
       </div>
     </div>
   );
